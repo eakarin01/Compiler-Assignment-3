@@ -1,5 +1,8 @@
 1+(2*(3+-4)) \ 2h
 
+$acc/$rA
+4\0
+
 PUSH $acc
 PUSH $acc
 SHOW $top
@@ -17,10 +20,12 @@ POP $rY
 
 SHOW $rY
 
+
 LOAD $rB $size
 
 LOAD $top $rX
 
 
 
+END
 

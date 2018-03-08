@@ -5,6 +5,8 @@ E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
 
+err         .
+
 %option noyywrap
 
 %{
@@ -14,8 +16,6 @@ IS			(u|U|l|L)*
 int getREGID(char*);
 
 %}
-
-
 
 %%
 
@@ -42,6 +42,10 @@ POP             { return T_POP;}
 $top            { return T_TOP;}
 $size           { return T_SIZE;}
 LOAD            { return T_LOAD;}
+END             { return T_EXIT;}
+
+{err}           { return T_ERR;}
+
 
 %%
 
