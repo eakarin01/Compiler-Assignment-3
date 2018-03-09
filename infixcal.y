@@ -9,6 +9,7 @@
   void yyerror (char const *);
   int reg[26];
   int acc;
+  // struct linked-list for stack
   struct Node{
     int data;
     struct Node *next;
@@ -31,8 +32,10 @@
 %right T_POW        /* exponentiation */
 %token T_ENDL T_EXIT T_ERR
 
-%% /* The grammar follows.  */
 
+/* The grammar follows.  */
+%% 
+// starting symbol
 input:
   %empty
 | input line
@@ -44,15 +47,15 @@ line:
 | T_SHOW vreg T_ENDL   { printf ("\t%d\n",$2); }
 | T_PUSH vreg T_ENDL   { push($2); }
 | T_POP T_REG T_ENDL   { if(top!=NULL)reg[$2]=pop();
-                          else {pop(); YYERROR ; }
-                        }
+                          else {pop(); }
+                        } // check pop when empty
 | T_POP T_ACC T_ENDL   { if(top!=NULL)acc=pop(); 
-                          else {pop(); YYERROR ;}
-                          }
+                          else {pop(); }
+                          } // check pop when empty
 | T_LOAD vreg T_REG T_ENDL   { reg[$3]=$2; }
 | T_LOAD vreg T_ACC T_ENDL   { acc=$2; }
 | T_EXIT T_ENDL                  {exit(0);}
-| error T_ENDL      {yyerrok ;}
+| error T_ENDL      {yyerrok ;} // when error occur skip token util T_ENDL
 ;
 
 vreg:
@@ -62,7 +65,8 @@ vreg:
 | T_TOP             { 
                       if(top!=NULL)$$ = peek();  
                       else
-                      {peek();YYERROR ;}         }
+                      {peek();YYERROR ;}         
+                      } // check pop when empty
 ;
 
 exp:
@@ -73,7 +77,7 @@ exp:
 | exp T_MUL exp        { $$ = $1 * $3;      }
 | exp T_DIV exp       { if ($3 != 0) $$ = $1 / $3;   
                         else { yyerror("ERROR: Divide by 0"); YYERROR ;} 
-                      }
+                      } // check when divide by 0
 | T_MINUS exp  %prec NEG { $$ = -$2;          }
 | exp T_POW exp        { $$ = pow ($1, $3); }
 | LEFT_PAREN exp RIGHT_PAREN        { $$ = $2;           }
@@ -81,12 +85,13 @@ exp:
 | exp T_OR exp        { $$ = $1 | $3;           }
 | T_NOT exp        { $$ = ~$2;           }
 | exp T_MOD exp        { if ($3 != 0) $$ = $1 % $3;   
-                        else { yyerror("ERROR: Modulo by 0"); YYERROR ;}       
-                        }
+                        else { yyerror("ERROR: Divide by 0"); YYERROR ;}       
+                        } // check when mod by 0
 ;
 
 %%
 
+// push function
 void push(int value)
 {
    struct Node *newNode;
@@ -99,6 +104,7 @@ void push(int value)
       newNode->next = top;
    top = newNode;
 }
+// pop function
 int pop()
 {
    if(top == NULL)
@@ -115,6 +121,7 @@ int pop()
       return ret;
    }
 }
+// return top of stack
 int peek()
 {
    if(top == NULL)
@@ -135,6 +142,7 @@ void yyerror (char const *s)
 
 int main()
 {
+  // end process when with token "END"
   while(1)
     yyparse();
 }

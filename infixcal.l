@@ -4,7 +4,6 @@ H			[a-fA-F0-9]
 E			[Ee][+-]?{D}+
 FS			(f|F|l|L)
 IS			(u|U|l|L)*
-
 err         .
 
 %option noyywrap
@@ -12,13 +11,10 @@ err         .
 %{
 #include <stdio.h>
 #include "infixcal.tab.h"
-
 int getREGID(char*);
-
 %}
 
 %%
-
 [ \t]           ; // ignore all whitespace
 {D}+            { yylval = atoi(yytext); return NUM;}
 {H}+h           { yylval = (int)strtol(yytext, NULL, 16); return NUM;}
@@ -44,12 +40,11 @@ $size           { return T_SIZE;}
 LOAD            { return T_LOAD;}
 END             { return T_EXIT;}
 
-{err}           { return T_ERR;}
-
-
+{err}           { return T_ERR;} //return error token when input other
 %%
 
 int getREGID(char* yytext)
 {
+    // return reg id 0 - 26
     return yytext[2]-'A';
 }
